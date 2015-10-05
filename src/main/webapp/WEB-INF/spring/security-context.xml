@@ -1,0 +1,58 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+    
+    <http  access-denied-page="/accessdenied" >
+        
+        <intercept-url pattern="/accessdenied" access="IS_AUTHENTICATED_ANONYMOUSLY" /> 
+
+        <intercept-url pattern="/" access="ROLE_ADMIN, ROLE_MEMBER" />
+        
+        <form-login login-page="/login" 
+                    default-target-url="/" 
+                    authentication-failure-url="/loginfailed"
+                    username-parameter="username"
+                    password-parameter="password" 
+                    login-processing-url="/auth/login_check" 
+        />
+        
+        <intercept-url pattern="/expense/*" access="ROLE_MEMBER" /> 
+     
+        <logout logout-success-url="/logout" />
+ 		
+ 		<intercept-url pattern="/rest/*" access="ROLE_MEMBER" />
+ 		
+  		
+    </http>
+    
+    
+    
+    <beans:bean id="dataSourceSecurity" class="org.apache.commons.dbcp.BasicDataSource"
+                destroy-method="close">
+        <beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <beans:property name="url" value="jdbc:mysql://localhost:3306/aster?zeroDateTimeBehavior=convertToNull" />
+        <beans:property name="username" value="root" />
+        <beans:property name="password" value="" />
+    </beans:bean>
+    <beans:bean id="webexpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler" /> 
+
+    <beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+        <!--<beans:constructor-arg name="strength" value="10" />-->
+    </beans:bean>
+        
+    
+    
+    <authentication-manager>
+        <authentication-provider>
+            <password-encoder ref="encoder" />
+            <jdbc-user-service data-source-ref="dataSourceSecurity"
+                               users-by-username-query="select username, password, enabled FROM member WHERE username=?"
+                               authorities-by-username-query="SELECT u.username, r.roleName FROM member u, role r, member_role  ur  WHERE u.memberId=ur.member_memberId AND r.roleId=ur.roles_roleId AND u.username=?" />
+        </authentication-provider>
+    </authentication-manager>
+
+ 
+</beans:beans>
