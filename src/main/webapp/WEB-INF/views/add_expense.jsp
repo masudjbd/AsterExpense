@@ -15,6 +15,9 @@
 <link
 	href="${pageContext.request.contextPath}/resource/css/bootstrap.min.css"
 	rel="stylesheet">
+	
+	<link href="${pageContext.request.contextPath}/resource/css/datepicker.css"
+              rel="stylesheet" />
 <script
 	src="${pageContext.request.contextPath}/resource/js/jquery-1.9.1.min.js"></script>
 
@@ -93,7 +96,7 @@
 
 						<label for="cost">Cost</label>
 						<form:input path="cost" type="text" class="form-control"
-							name="cost" value="" />
+							name="cost" />
 						<form:errors path="cost" cssClass="error" />
 					</div>
 					<div class="form-group">
